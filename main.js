@@ -1,10 +1,11 @@
-const root = document.getElementById('root')
+import { createElement } from './createElement.js'
+import { render } from './render.js'
 
-const appNode = document.createElement('div')
-appNode.setAttribute('id', 'app')
+render(
+  createElement(
+    'div', { id: 'app' },
+    'hi-mini-react',
+  ),
+  document.getElementById('root')
+)
 
-const textNode = document.createTextNode('hi-mini-react')
-
-appNode.appendChild(textNode)
-
-root.appendChild(appNode)
