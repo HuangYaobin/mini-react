@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { createElement } from '../createElement.js'
+import { createElement } from '../core/React'
 
 describe('createElement', () => {
   it('没有属性', () => {
