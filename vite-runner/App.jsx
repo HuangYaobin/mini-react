@@ -1,4 +1,4 @@
-import { createElement } from './core/React.js'
+import { createElement } from '../core/React.js'
 
 const App = createElement(
   'div', { id: 'app' },
