@@ -1,8 +1,5 @@
-import { createElement } from '../core/React.js'
+import React from '../core/React.js'
 
-const App = createElement(
-  'div', { id: 'app' },
-  'hi-mini-react',
-)
+const App = <div id="app">hi-mini-react</div>
 
 export default App
