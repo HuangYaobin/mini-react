@@ -12,6 +12,7 @@ function workLoop (el, container) {
     sibling: null,
     parent: null,
   }
+  let rootUnitOfWork = nextUnitOfWork
 
   requestIdleCallback(
     function work (IdleDeadline) {
@@ -23,9 +24,25 @@ function workLoop (el, container) {
         shouldYield = IdleDeadline.timeRemaining() < 1
       }
 
+      if (!nextUnitOfWork && rootUnitOfWork) {
+        commitRoot(rootUnitOfWork)
+        rootUnitOfWork = null
+      }
+
       requestIdleCallback(work)
     }
   )
+}
+
+function commitRoot (root) {
+  commitWork(root.child)
+}
+
+function commitWork (fiber) {
+  if (!fiber) return
+  fiber.parent.dom.appendChild(fiber.dom)
+  commitWork(fiber.child)
+  commitWork(fiber.sibling)
 }
 
 function performUnitOfWork (fiber) {
@@ -33,8 +50,6 @@ function performUnitOfWork (fiber) {
     const dom = fiber.dom = createDom(fiber.type)
 
     updateProps(dom, fiber.props)
-
-    fiber.parent?.dom.appendChild(dom)
   }
 
   initChildren(fiber)
