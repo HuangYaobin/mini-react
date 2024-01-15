@@ -30,21 +30,42 @@ function workLoop (el, container) {
 
 function performUnitOfWork (fiber) {
   if (!fiber.dom) {
-    const dom = (
-      fiber.dom = fiber.type === 'TEXT_ELEMENT'
-        ? document.createTextNode(fiber.props.nodeValue)
-        : document.createElement(fiber.type)
-    )
+    const dom = fiber.dom = createDom(fiber.type)
 
-    Object.entries(fiber.props).forEach(([key, value]) => {
-      if (key !== 'children') {
-        dom[key] = value
-      }
-    })
+    updateProps(dom, fiber.props)
 
     fiber.parent?.dom.appendChild(dom)
   }
 
+  initChildren(fiber)
+
+  if (fiber.child) {
+    return fiber.child
+  }
+
+  if (fiber.sibling) {
+    return fiber.sibling
+  }
+
+  // 要递归找叔叔?
+  return fiber.parent?.sibling
+}
+
+function createDom (type) {
+  return type === 'TEXT_ELEMENT'
+    ? document.createTextNode('')
+    : document.createElement(type)
+}
+
+function updateProps (dom, props) {
+  Object.entries(props).forEach(([key, value]) => {
+    if (key !== 'children') {
+      dom[key] = value
+    }
+  })
+}
+
+function initChildren (fiber) {
   let preFiber = null
   fiber.props.children.forEach((child, index) => {
     const newFiber = {
@@ -64,19 +85,7 @@ function performUnitOfWork (fiber) {
 
     preFiber = newFiber
   })
-
-  if (fiber.child) {
-    return fiber.child
-  }
-
-  if (fiber.sibling) {
-    return fiber.sibling
-  }
-
-  // 要递归找叔叔?
-  return fiber.parent?.sibling
 }
-
 
 export function createElement (type, props, ...children) {
   return {
