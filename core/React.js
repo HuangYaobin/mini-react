@@ -53,16 +53,11 @@ function commitWork (fiber) {
 
 function performUnitOfWork (fiber) {
   const isFunctionComponent = typeof fiber.type === 'function'
-  if (!fiber.dom) {
-    if (!isFunctionComponent) {
-      const dom = fiber.dom = createDom(fiber.type)
-
-      updateProps(dom, fiber.props)
-    }
+  if (isFunctionComponent) {
+    updateFunctionComponent(fiber)
+  } else {
+    updateHostComponent(fiber)
   }
-
-  const children = isFunctionComponent ? [fiber.type(fiber.props)] : fiber.props.children
-  initChildren(fiber, children)
 
   if (fiber.child) {
     return fiber.child
@@ -73,6 +68,21 @@ function performUnitOfWork (fiber) {
     if (nextFiber.sibling) return nextFiber.sibling
     nextFiber = nextFiber.parent
   }
+}
+
+function updateFunctionComponent (fiber) {
+  const children = [fiber.type(fiber.props)]
+  initChildren(fiber, children)
+}
+
+function updateHostComponent (fiber) {
+  if (!fiber.dom) {
+    const dom = fiber.dom = createDom(fiber.type)
+    updateProps(dom, fiber.props)
+  }
+
+  const children = fiber.props.children
+  initChildren(fiber, children)
 }
 
 function createDom (type) {
