@@ -61,7 +61,7 @@ function performUnitOfWork (fiber) {
     }
   }
 
-  const children = isFunctionComponent ? [fiber.type()] : fiber.props.children
+  const children = isFunctionComponent ? [fiber.type(fiber.props)] : fiber.props.children
   initChildren(fiber, children)
 
   if (fiber.child) {
@@ -118,7 +118,8 @@ export function createElement (type, props, ...children) {
     props: {
       ...props,
       children: children.map(child => {
-        return typeof child === 'string' ? createTextNode(child) : child
+        const isTextNode = ['string', 'number'].includes(typeof child)
+        return isTextNode ? createTextNode(child) : child
       })
     },
 
