@@ -12,6 +12,7 @@ const App = (
   <div id="app">
     <div>hi-mini-react</div>
     <Counter num={10} />
+    <Counter num={20} />
   </div>
 )
 

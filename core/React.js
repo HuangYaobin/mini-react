@@ -68,12 +68,11 @@ function performUnitOfWork (fiber) {
     return fiber.child
   }
 
-  if (fiber.sibling) {
-    return fiber.sibling
+  let nextFiber = fiber
+  while (nextFiber) {
+    if (nextFiber.sibling) return nextFiber.sibling
+    nextFiber = nextFiber.parent
   }
-
-  // 要递归找叔叔?
-  return fiber.parent?.sibling
 }
 
 function createDom (type) {
