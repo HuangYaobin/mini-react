@@ -40,19 +40,29 @@ function commitRoot (root) {
 
 function commitWork (fiber) {
   if (!fiber) return
-  fiber.parent.dom.appendChild(fiber.dom)
+  let fiberParent = fiber.parent
+  while (!fiberParent.dom) {
+    fiberParent = fiberParent.parent
+  }
+  if (fiber.dom) {
+    fiberParent.dom.appendChild(fiber.dom)
+  }
   commitWork(fiber.child)
   commitWork(fiber.sibling)
 }
 
 function performUnitOfWork (fiber) {
+  const isFunctionComponent = typeof fiber.type === 'function'
   if (!fiber.dom) {
-    const dom = fiber.dom = createDom(fiber.type)
+    if (!isFunctionComponent) {
+      const dom = fiber.dom = createDom(fiber.type)
 
-    updateProps(dom, fiber.props)
+      updateProps(dom, fiber.props)
+    }
   }
 
-  initChildren(fiber)
+  const children = isFunctionComponent ? [fiber.type()] : fiber.props.children
+  initChildren(fiber, children)
 
   if (fiber.child) {
     return fiber.child
@@ -80,9 +90,9 @@ function updateProps (dom, props) {
   })
 }
 
-function initChildren (fiber) {
+function initChildren (fiber, children) {
   let preFiber = null
-  fiber.props.children.forEach((child, index) => {
+  children.forEach((child, index) => {
     const newFiber = {
       type: child.type,
       props: child.props,
