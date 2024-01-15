@@ -3,7 +3,7 @@ export function render (el, container) {
 }
 
 function workLoop (el, container) {
-  let nextWorkOfUnit = {
+  let nextUnitOfWork = {
     props: {
       children: [el]
     },
@@ -17,8 +17,8 @@ function workLoop (el, container) {
     function work (IdleDeadline) {
       let shouldYield = IdleDeadline.timeRemaining() < 1
 
-      while (!shouldYield && nextWorkOfUnit) {
-        nextWorkOfUnit = performWorkOfUnit(nextWorkOfUnit)
+      while (!shouldYield && nextUnitOfWork) {
+        nextUnitOfWork = performUnitOfWork(nextUnitOfWork)
 
         shouldYield = IdleDeadline.timeRemaining() < 1
       }
@@ -28,7 +28,7 @@ function workLoop (el, container) {
   )
 }
 
-function performWorkOfUnit (fiber) {
+function performUnitOfWork (fiber) {
   if (!fiber.dom) {
     const dom = (
       fiber.dom = fiber.type === 'TEXT_ELEMENT'
