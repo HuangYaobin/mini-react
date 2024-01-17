@@ -1,9 +1,10 @@
+// work in progress root
+let wipRoot
 let nextUnitOfWork
-let rootUnitOfWork
 let currentRootUnitOfWork
 
 export function render (el, container) {
-  nextUnitOfWork = {
+  wipRoot = {
     props: {
       children: [el]
     },
@@ -12,11 +13,11 @@ export function render (el, container) {
     sibling: null,
     parent: null,
   }
-  rootUnitOfWork = nextUnitOfWork
+  nextUnitOfWork = wipRoot
 }
 
 export function update () {
-  nextUnitOfWork = {
+  wipRoot = {
     props: currentRootUnitOfWork.props,
     dom: currentRootUnitOfWork.dom,
     child: null,
@@ -24,7 +25,7 @@ export function update () {
     parent: null,
     alternate: currentRootUnitOfWork
   }
-  rootUnitOfWork = nextUnitOfWork
+  nextUnitOfWork = wipRoot
 }
 
 function workLoop (IdleDeadline) {
@@ -36,7 +37,7 @@ function workLoop (IdleDeadline) {
     shouldYield = IdleDeadline.timeRemaining() < 1
   }
 
-  if (!nextUnitOfWork && rootUnitOfWork) {
+  if (!nextUnitOfWork && wipRoot) {
     commitRoot()
   }
 
@@ -46,9 +47,9 @@ function workLoop (IdleDeadline) {
 requestIdleCallback(workLoop)
 
 function commitRoot () {
-  commitWork(rootUnitOfWork.child)
-  currentRootUnitOfWork = rootUnitOfWork
-  rootUnitOfWork = null
+  commitWork(wipRoot.child)
+  currentRootUnitOfWork = wipRoot
+  wipRoot = null
 }
 
 function commitWork (fiber) {
@@ -89,7 +90,7 @@ function performUnitOfWork (fiber) {
 
 function updateFunctionComponent (fiber) {
   const children = [fiber.type(fiber.props)]
-  initChildren(fiber, children)
+  reconcileChildren(fiber, children)
 }
 
 function updateHostComponent (fiber) {
@@ -99,7 +100,7 @@ function updateHostComponent (fiber) {
   }
 
   const children = fiber.props.children
-  initChildren(fiber, children)
+  reconcileChildren(fiber, children)
 }
 
 function createDom (type) {
@@ -128,7 +129,7 @@ function updateProps (dom, nextProps, prevProps = {}) {
   })
 }
 
-function initChildren (fiber, children) {
+function reconcileChildren (fiber, children) {
   let preChildFiber = null
   let oldChildFiber = fiber.alternate?.child
 
