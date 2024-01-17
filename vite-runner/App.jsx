@@ -1,13 +1,17 @@
 import React from '../core/React.js'
 
-function Counter({ num }) {
+let num = 1
+let counterProps = { style: () => num % 5 === 0 ? 'color:red;' : '' }
+
+function Counter() {
   function handleClick() {
-    console.log('click')
+    num++
+    React.update()
   }
   return (
     <div>
-      <div>counter { num }</div>
-      <button onClick={handleClick}>点击</button>
+      <div style={ counterProps.style() }>counter { num }</div>
+      <button onClick={handleClick}>+1</button>
     </div>
   )
 }
