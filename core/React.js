@@ -1,9 +1,8 @@
-export function render (el, container) {
-  workLoop(el, container)
-}
+let nextUnitOfWork
+let rootUnitOfWork
 
-function workLoop (el, container) {
-  let nextUnitOfWork = {
+export function render (el, container) {
+  nextUnitOfWork = {
     props: {
       children: [el]
     },
@@ -12,27 +11,27 @@ function workLoop (el, container) {
     sibling: null,
     parent: null,
   }
-  let rootUnitOfWork = nextUnitOfWork
-
-  requestIdleCallback(
-    function work (IdleDeadline) {
-      let shouldYield = IdleDeadline.timeRemaining() < 1
-
-      while (!shouldYield && nextUnitOfWork) {
-        nextUnitOfWork = performUnitOfWork(nextUnitOfWork)
-
-        shouldYield = IdleDeadline.timeRemaining() < 1
-      }
-
-      if (!nextUnitOfWork && rootUnitOfWork) {
-        commitRoot(rootUnitOfWork)
-        rootUnitOfWork = null
-      }
-
-      requestIdleCallback(work)
-    }
-  )
+  rootUnitOfWork = nextUnitOfWork
 }
+
+function workLoop (IdleDeadline) {
+  let shouldYield = IdleDeadline.timeRemaining() < 1
+
+  while (!shouldYield && nextUnitOfWork) {
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork)
+
+    shouldYield = IdleDeadline.timeRemaining() < 1
+  }
+
+  if (!nextUnitOfWork && rootUnitOfWork) {
+    commitRoot(rootUnitOfWork)
+    rootUnitOfWork = null
+  }
+
+  requestIdleCallback(workLoop)
+}
+
+requestIdleCallback(workLoop)
 
 function commitRoot (root) {
   commitWork(root.child)
