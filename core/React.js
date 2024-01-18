@@ -187,8 +187,14 @@ function reconcileChildren (fiber, children) {
       preChildFiber.sibling = newChildFiber
     }
 
+
     preChildFiber = newChildFiber
   })
+
+  while (oldChildFiber) {
+    deletions.push(oldChildFiber)
+    oldChildFiber = oldChildFiber.sibling
+  }
 }
 
 export function createElement (type, props, ...children) {

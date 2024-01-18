@@ -7,27 +7,36 @@ function Controller() {
     visible = !visible
     React.update()
   }
-  return <button onClick={handleVisible}>
-    开关
-  </button>
+  
+  const open = (
+    <div>
+      <span style="font-weight: bold;">状态:</span>
+      <span>已打开</span>
+      <span>!!!</span>
+      <span>...</span>
+    </div>
+  )
+  const close = (
+    <div>
+      <span>已关闭</span>
+    </div>
+  )
+
+  return <div>
+    <button onClick={handleVisible}>
+      开关
+    </button>
+    { visible  ? open : close }
+  </div>
 }
 
-function Open() {
-  return <div>已打开</div>
-}
 
-function Close() {
-  return <div>已关闭</div>
-}
 
 function App() {
   return(
     <div id="app">
       <div>hi-mini-react</div>
       <Controller />
-      <div>
-        { visible  ? <Open /> : <Close /> }      
-      </div>
     </div>
   )
 }
