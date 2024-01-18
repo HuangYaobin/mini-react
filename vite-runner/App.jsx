@@ -8,29 +8,25 @@ function Controller() {
     React.update()
   }
   
-  const open = (
-    <div>
-      <span style="font-weight: bold;">状态:</span>
-      <span>已打开</span>
-      <span>!!!</span>
-      <span>...</span>
-    </div>
-  )
-  const close = (
-    <div>
-      <span>已关闭</span>
-    </div>
-  )
+  function Open() {
+    return (
+      <div>
+        <span style="font-weight: bold;">状态:</span>
+        <span>已打开</span>
+        <span>!!!</span>
+        <span>...</span>
+      </div>
+    )
+  }
 
   return <div>
+    <div>Controller</div>
+    { visible  && <Open /> }
     <button onClick={handleVisible}>
       开关
     </button>
-    { visible  ? open : close }
   </div>
 }
-
-
 
 function App() {
   return(
