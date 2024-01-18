@@ -1,38 +1,54 @@
 import React from '../core/React.js'
 
-let visible = true
+let fooCount = 1
+function FooCounter() {
+  console.log('Foo reRender')
+  const render = React.update()
 
-function Controller() {
-  function handleVisible() {
-    visible = !visible
-    React.update()
+  function add() {
+    fooCount++
+    render()
   }
-  
-  function Open() {
-    return (
-      <div>
-        <span style="font-weight: bold;">状态:</span>
-        <span>已打开</span>
-        <span>!!!</span>
-        <span>...</span>
-      </div>
-    )
-  }
-
-  return <div>
-    <div>Controller</div>
-    { visible  && <Open /> }
-    <button onClick={handleVisible}>
-      开关
-    </button>
-  </div>
+  return (
+    <div>
+      <span>FooCounter: {fooCount} </span>
+      <button onClick={add}>+1</button>
+    </div>
+  )
 }
 
+let barCount = 1
+function BarCounter() {
+  console.log('Bar reRender')
+  const render = React.update()
+
+  function add() {
+    barCount++
+    render()
+  }
+  return (
+    <div>
+      <span>BarCounter: {barCount} </span>
+      <button onClick={add}>+1</button>
+    </div>
+  )
+}
+
+let rootCount = 1
 function App() {
+  console.log('App reRender')
+  const render = React.update()
+
+  function add() {
+    rootCount++
+    render()
+  }
   return(
     <div id="app">
       <div>hi-mini-react</div>
-      <Controller />
+      <span>RootCounter: {rootCount} </span><button onClick={add}>+1</button>
+      <FooCounter />
+      <BarCounter />
     </div>
   )
 }
