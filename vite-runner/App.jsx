@@ -1,26 +1,33 @@
 import React from '../core/React.js'
 
-let num = 1
-let counterProps = { style: () => num % 5 === 0 ? 'color:red;' : '' }
+let visible = true
 
-function Counter() {
-  function handleClick() {
-    num++
+function Controller() {
+  function handleVisible() {
+    visible = !visible
     React.update()
   }
-  return (
-    <div>
-      <div style={ counterProps.style() }>counter { num }</div>
-      <button onClick={handleClick}>+1</button>
-    </div>
-  )
+  return <button onClick={handleVisible}>
+    开关
+  </button>
+}
+
+function Open() {
+  return <div>已打开</div>
+}
+
+function Close() {
+  return <div>已关闭</div>
 }
 
 function App() {
   return(
     <div id="app">
       <div>hi-mini-react</div>
-      <Counter num={10} />
+      <Controller />
+      <div>
+        { visible  ? <Open /> : <Close /> }      
+      </div>
     </div>
   )
 }

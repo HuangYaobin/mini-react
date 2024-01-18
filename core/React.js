@@ -2,6 +2,7 @@
 let wipRoot
 let nextUnitOfWork
 let currentRootUnitOfWork
+let deletions = []
 
 export function render (el, container) {
   wipRoot = {
@@ -47,9 +48,11 @@ function workLoop (IdleDeadline) {
 requestIdleCallback(workLoop)
 
 function commitRoot () {
+  deletions.forEach(commitDeletion)
   commitWork(wipRoot.child)
   currentRootUnitOfWork = wipRoot
   wipRoot = null
+  deletions = []
 }
 
 function commitWork (fiber) {
@@ -67,6 +70,16 @@ function commitWork (fiber) {
   }
   commitWork(fiber.child)
   commitWork(fiber.sibling)
+}
+
+function commitDeletion (fiber) {
+  if (!fiber) return
+  if (!fiber.dom) return commitDeletion(fiber.child)
+  let fiberParent = fiber.parent
+  while (!fiberParent.dom) {
+    fiberParent = fiberParent.parent
+  }
+  fiberParent.dom.removeChild(fiber.dom)
 }
 
 function performUnitOfWork (fiber) {
@@ -159,6 +172,9 @@ function reconcileChildren (fiber, children) {
         effectTag: 'placement'
       }
 
+      if (oldChildFiber) {
+        deletions.push(oldChildFiber)
+      }
     }
 
     if (oldChildFiber) {
