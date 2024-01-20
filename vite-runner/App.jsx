@@ -10,11 +10,10 @@ function Foo() {
     addStr()
   }
   function add() {
-    setCount((n) => n+1)
+    setCount(count)
   }
   function addStr() {
-    // setStr((str) => str + '!')
-    setStr(str + '!')
+    setStr(str)
   }
   return (
     <div>
