@@ -13,7 +13,8 @@ function Foo() {
     setCount((n) => n+1)
   }
   function addStr() {
-    setStr((str) => str + '!')
+    // setStr((str) => str + '!')
+    setStr(str + '!')
   }
   return (
     <div>

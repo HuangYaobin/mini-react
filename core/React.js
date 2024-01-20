@@ -225,8 +225,7 @@ export function useState (initialState) {
   currentFiber.stateHooks = stateHooks
 
   function setState (action) {
-    stateHook.queue.push(action)
-    // stateHook.state = action(stateHook.state)
+    stateHook.queue.push(typeof action === 'function' ? action : () => action)
 
     wipRoot = {
       ...currentFiber,
