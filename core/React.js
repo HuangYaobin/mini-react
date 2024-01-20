@@ -232,7 +232,7 @@ export function useState (initialState) {
 
     if (oldState === eagerState) return
 
-    stateHook.queue.push(action)
+    stateHook.queue.push(actionFn)
 
     wipRoot = {
       ...currentFiber,
