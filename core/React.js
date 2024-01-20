@@ -213,8 +213,11 @@ export function useState (initialState) {
 
   const oldStateHook = oldFiber?.stateHooks?.[stateHooksIndex]
   const stateHook = {
-    state: oldStateHook?.state || initialState
+    state: oldStateHook?.state || initialState,
+    queue: []
   }
+
+  oldStateHook?.queue.forEach(action => stateHook.state = action(stateHook.state))
 
   stateHooksIndex++
   stateHooks.push(stateHook)
@@ -222,7 +225,8 @@ export function useState (initialState) {
   currentFiber.stateHooks = stateHooks
 
   function setState (action) {
-    stateHook.state = action(stateHook.state)
+    stateHook.queue.push(action)
+    // stateHook.state = action(stateHook.state)
 
     wipRoot = {
       ...currentFiber,
@@ -230,6 +234,7 @@ export function useState (initialState) {
     }
     nextUnitOfWork = wipRoot
   }
+
   return [
     stateHook.state,
     setState
