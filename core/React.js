@@ -53,6 +53,7 @@ requestIdleCallback(workLoop)
 function commitRoot () {
   deletions.forEach(commitDeletion)
   commitWork(wipRoot.child)
+  commitEffectHook()
   wipRoot = null
   deletions = []
 }
@@ -84,6 +85,41 @@ function commitDeletion (fiber) {
   fiberParent.dom.removeChild(fiber.dom)
 }
 
+function commitEffectHook () {
+  const currentFiber = {
+    ...wipRoot,
+    sibling: null
+  }
+  run(currentFiber)
+
+  function run (fiber) {
+    if (!fiber) return
+
+    const isInit = !fiber.alternate
+
+    if (isInit) {
+      fiber.effectHooks?.forEach(effectHook => {
+        effectHook?.callback()
+      })
+    } else {
+      fiber.effectHooks?.forEach((effectHook, index) => {
+        if (!effectHook.deps.length) return
+
+        const deps = effectHook.deps
+        const oldDeps = fiber.alternate.effectHooks[index].deps
+        const needUpdate = deps.length !== oldDeps.length || deps.some((dep, i) => dep !== oldDeps[i])
+
+        if (needUpdate) {
+          effectHook?.callback()
+        }
+      })
+    }
+
+    run(fiber.child)
+    run(fiber.sibling)
+  }
+}
+
 function performUnitOfWork (fiber) {
   const isFunctionComponent = typeof fiber.type === 'function'
   if (isFunctionComponent) {
@@ -107,6 +143,7 @@ function updateFunctionComponent (fiber) {
   wipFiber = fiber
   stateHooks = []
   stateHooksIndex = 0
+  effectHooks = []
   const children = [fiber.type(fiber.props)]
   reconcileChildren(fiber, children)
 }
@@ -247,6 +284,17 @@ export function useState (initialState) {
   ]
 }
 
+let effectHooks = []
+export function useEffect (callback, deps) {
+  const currentFiber = wipFiber
+  const effectHook = {
+    callback,
+    deps
+  }
+  effectHooks.push(effectHook)
+  currentFiber.effectHooks = effectHooks
+}
+
 export function createElement (type, props, ...children) {
   return {
     type,
@@ -274,6 +322,7 @@ const React = {
   render,
   update,
   useState,
+  useEffect,
   createElement
 }
 
