@@ -90,6 +90,8 @@ function commitEffectHook () {
     ...wipRoot,
     sibling: null
   }
+
+  runCleanup(currentFiber)
   run(currentFiber)
 
   function run (fiber) {
@@ -99,7 +101,9 @@ function commitEffectHook () {
 
     if (isInit) {
       fiber.effectHooks?.forEach(effectHook => {
-        effectHook?.callback()
+        const cleanup = effectHook.callback()
+        if (effectHook.deps.length)
+          effectHook.cleanup = cleanup
       })
     } else {
       fiber.effectHooks?.forEach((effectHook, index) => {
@@ -110,7 +114,7 @@ function commitEffectHook () {
         const needUpdate = deps.length !== oldDeps.length || deps.some((dep, i) => dep !== oldDeps[i])
 
         if (needUpdate) {
-          effectHook?.callback()
+          effectHook.cleanup = effectHook.callback()
         }
       })
     }
@@ -118,7 +122,19 @@ function commitEffectHook () {
     run(fiber.child)
     run(fiber.sibling)
   }
+
+  function runCleanup (fiber) {
+    if (!fiber) return
+
+    fiber.alternate?.effectHooks.forEach(effectHook => {
+      effectHook.cleanup?.()
+    })
+
+    run(fiber.child)
+    run(fiber.sibling)
+  }
 }
+
 
 function performUnitOfWork (fiber) {
   const isFunctionComponent = typeof fiber.type === 'function'

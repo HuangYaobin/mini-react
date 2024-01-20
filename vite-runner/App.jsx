@@ -6,10 +6,12 @@ function Foo() {
 
   useEffect(() => {
     console.log('foo useEffect init')
+    return () => console.log('foo useEffect init cleanup')
   }, [])
 
   useEffect(() => {
     console.log('foo useEffect update')
+    return () => console.log('foo useEffect update cleanup')
   }, [count])
 
   function handleClick()   {
@@ -32,10 +34,12 @@ function Bar() {
 
   useEffect(() => {
     console.log('bar useEffect init')
+    return () => console.log('bar useEffect init cleanup')
   }, [])
 
   useEffect(() => {
     console.log('bar useEffect update')
+    return () => console.log('bar useEffect update cleanup')
   }, [str])
 
   function handleClick()   {
