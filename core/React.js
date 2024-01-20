@@ -1,7 +1,6 @@
 // work in progress root
 let wipRoot
 let nextUnitOfWork
-let currentRootUnitOfWork
 let wipFiber
 let deletions = []
 
@@ -54,7 +53,6 @@ requestIdleCallback(workLoop)
 function commitRoot () {
   deletions.forEach(commitDeletion)
   commitWork(wipRoot.child)
-  currentRootUnitOfWork = wipRoot
   wipRoot = null
   deletions = []
 }
