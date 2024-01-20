@@ -1,54 +1,36 @@
-import React from '../core/React.js'
+import React,  {  useState } from '../core/React.js'
 
-let fooCount = 1
-function FooCounter() {
+function Foo() {
   console.log('Foo reRender')
-  const render = React.update()
+  const [count, setCount] = useState(1)
+  const [str, setStr] = useState('hello')
 
+  function handleClick()   {
+    add()
+    addStr()
+  }
   function add() {
-    fooCount++
-    render()
+    setCount((n) => n+1)
+  }
+  function addStr() {
+    setStr((str) => str + '!')
   }
   return (
     <div>
-      <span>FooCounter: {fooCount} </span>
-      <button onClick={add}>+1</button>
+      <div>FooCounter: {count} </div>
+      <div>FooStr: {str} </div>
+      <button onClick={handleClick}>点击</button>
     </div>
   )
 }
 
-let barCount = 1
-function BarCounter() {
-  console.log('Bar reRender')
-  const render = React.update()
-
-  function add() {
-    barCount++
-    render()
-  }
-  return (
-    <div>
-      <span>BarCounter: {barCount} </span>
-      <button onClick={add}>+1</button>
-    </div>
-  )
-}
-
-let rootCount = 1
 function App() {
   console.log('App reRender')
-  const render = React.update()
-
-  function add() {
-    rootCount++
-    render()
-  }
+  
   return(
     <div id="app">
       <div>hi-mini-react</div>
-      <span>RootCounter: {rootCount} </span><button onClick={add}>+1</button>
-      <FooCounter />
-      <BarCounter />
+      <Foo />
     </div>
   )
 }
